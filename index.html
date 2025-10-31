@@ -1,0 +1,184 @@
+
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Descubrí tu tipo de inteligencia 🧠</title>
+<style>
+    body {
+        font-family: 'Arial', sans-serif;
+        background-color: #f5efe6;
+        color: #333;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        margin: 0;
+        padding: 20px;
+    }
+    h1 {
+        color: #4a3b2e;
+        text-align: center;
+    }
+    p {
+        text-align: center;
+        max-width: 600px;
+        font-size: 1.1em;
+    }
+    .question {
+        background-color: #fff;
+        padding: 20px;
+        margin: 10px;
+        border-radius: 10px;
+        box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        width: 100%;
+        max-width: 600px;
+    }
+    button {
+        background-color: #d1bfa7;
+        border: none;
+        border-radius: 8px;
+        padding: 10px 15px;
+        margin: 5px;
+        cursor: pointer;
+        font-size: 1em;
+    }
+    button:hover {
+        background-color: #c5af95;
+    }
+    #result {
+        margin-top: 30px;
+        font-size: 1.2em;
+        background-color: #fff;
+        padding: 20px;
+        border-radius: 10px;
+        max-width: 600px;
+        text-align: center;
+        display: none;
+    }
+</style>
+</head>
+<body>
+
+<h1>Descubrí tu tipo de inteligencia 🧠</h1>
+<p>Hacé este test rápido y descubrí cuál de las 8 inteligencias dominás más.</p>
+
+<div id="quiz"></div>
+<div id="result"></div>
+
+<script>
+const questions = [
+    {
+        text: "1. En tu tiempo libre, preferís:",
+        options: {
+            A: "Escuchar música o tocar un instrumento.",
+            B: "Resolver rompecabezas o acertijos.",
+            C: "Charlar con amigos o ayudar a alguien.",
+            D: "Dibujar, sacar fotos o decorar cosas.",
+            E: "Hacer deporte o mover el cuerpo.",
+            F: "Estar en la naturaleza o cuidar animales.",
+            G: "Pensar en tus emociones o escribir un diario."
+        }
+    },
+    {
+        text: "2. En la escuela o trabajo, se te da mejor:",
+        options: {
+            A: "Música o arte.",
+            B: "Matemática o lógica.",
+            C: "Lengua, teatro o debate.",
+            D: "Plástica o diseño.",
+            E: "Educación física o danza.",
+            F: "Ciencias naturales o ecología.",
+            G: "Psicología, filosofía o escritura personal."
+        }
+    },
+    {
+        text: "3. Cuando aprendés algo nuevo, preferís:",
+        options: {
+            A: "Escucharlo o cantarlo como una canción.",
+            B: "Analizarlo paso a paso y entender el porqué.",
+            C: "Explicarlo o practicarlo con otras personas.",
+            D: "Dibujarlo o imaginarlo con imágenes.",
+            E: "Hacerlo en la práctica, moviéndote.",
+            F: "Relacionarlo con la naturaleza o animales.",
+            G: "Pensar cómo te hace sentir o qué significa para vos."
+        }
+    },
+    {
+        text: "4. Te sentís más cómodo cuando:",
+        options: {
+            A: "Hay música de fondo.",
+            B: "Todo está ordenado y tiene lógica.",
+            C: "Trabajás en grupo o con amigos.",
+            D: "Podés usar colores, imágenes o gráficos.",
+            E: "Te movés o hacés algo activo.",
+            F: "Estás al aire libre o cerca de la naturaleza.",
+            G: "Tenés tiempo a solas para pensar o reflexionar."
+        }
+    },
+    {
+        text: "5. Si pudieras participar en un concurso, elegirías:",
+        options: {
+            A: "Cantar o tocar un instrumento.",
+            B: "Resolver un acertijo o desafío mental.",
+            C: "Liderar un grupo o hacer una entrevista.",
+            D: "Crear una maqueta, dibujo o video.",
+            E: "Competir en un deporte o coreografía.",
+            F: "Hacer un experimento o cuidar una planta.",
+            G: "Escribir algo inspirador o dar un mensaje positivo."
+        }
+    }
+];
+
+const results = {
+    A: "🎵 Inteligencia Musical: Tenés oído sensible, amás la música y te expresás a través de los sonidos.",
+    B: "🧩 Inteligencia Lógico-Matemática: Sos analítico/a, te gusta resolver problemas y encontrar soluciones lógicas.",
+    C: "💬 Inteligencia Interpersonal: Entendés a los demás, sabés comunicarte y trabajar en equipo.",
+    D: "🎨 Inteligencia Visual-Espacial: Tenés mucha imaginación y te guiás por imágenes, colores y diseño.",
+    E: "🏃 Inteligencia Corporal-Kinestésica: Aprendés moviéndote, usando tu cuerpo o haciendo cosas prácticas.",
+    F: "🌿 Inteligencia Naturalista: Te encanta la naturaleza, los animales y cuidar el entorno.",
+    G: "💭 Inteligencia Intrapersonal: Sos reflexivo/a, te conocés bien y entendés tus emociones."
+};
+
+const quizContainer = document.getElementById("quiz");
+const resultContainer = document.getElementById("result");
+
+let answers = {};
+
+function showQuestion(index) {
+    if (index >= questions.length) {
+        showResult();
+        return;
+    }
+    const q = questions[index];
+    quizContainer.innerHTML = `<div class='question'><h3>${q.text}</h3></div>`;
+    Object.entries(q.options).forEach(([key, value]) => {
+        const btn = document.createElement("button");
+        btn.textContent = `${key}. ${value}`;
+        btn.onclick = () => {
+            answers[key] = (answers[key] || 0) + 1;
+            showQuestion(index + 1);
+        };
+        quizContainer.appendChild(btn);
+    });
+}
+
+function showResult() {
+    quizContainer.style.display = "none";
+    let max = 0, dominant = "";
+    for (const key in answers) {
+        if (answers[key] > max) {
+            max = answers[key];
+            dominant = key;
+        }
+    }
+    resultContainer.style.display = "block";
+    resultContainer.innerHTML = `<h2>${results[dominant]}</h2>`;
+}
+
+showQuestion(0);
+</script>
+
+</body>
+</html>
